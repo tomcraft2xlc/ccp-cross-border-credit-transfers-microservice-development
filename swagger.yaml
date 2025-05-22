@@ -1,0 +1,1559 @@
+---
+openapi: 3.0.3
+info:
+  title: CCP Disposizione Bonifico
+  description: |+
+    Interfaccia per la disposizione di un bonifico cross border (fuori dall'area SEPA).
+
+    ## Macchina a stati bonifico
+
+    La seguente macchina a stati descrive i possibili stati in cui si trova un bonifico.
+
+    Lo stato inserted e to be confirmed sono previsti per il flusso di inserimento da frontend di backoffice.
+
+    [![](https://mermaid.ink/img/pako:eNplUk1PAyEU_CsvHE17sN_hYFKrBxN7qomJrofnwrYk7KNhoUab_ndxd8HScmKGGd5A5shKIyTjrHHo5IPCrcV6eBgVVBCEtbnl8ESNtE6KnhlxeDFwL2FlqFK2TgdjDo_WGpuISVQuvdsZq37SyZTD6-oZyDjYY9MkfsZhhVRKrRM157CR5Hq04NeXzWA4vIP3m48YucV_OZfkFFQWvQAkAQfUSqBThvKpvWGcGYw9118lHV8MHXV3hCenb2lnfpW6Mza5cHou_PSuFV5N6ZPNcm-EkxxOczi_SNirF_EnOzjPzSH_Gsmjjuna58c2sAGrZeCUCI05_nEFcztZy4LxsBWyQq9dwQo6BSl6ZzbfVDLurJcD5vfiv2OMV6ibwEqhnLHrroVtGQfMGr_dJcUe6c2Y6Dj9AtBuzIo?type=png)](https://mermaid.live/edit#pako:eNplUk1PAyEU_CsvHE17sN_hYFKrBxN7qomJrofnwrYk7KNhoUab_ndxd8HScmKGGd5A5shKIyTjrHHo5IPCrcV6eBgVVBCEtbnl8ESNtE6KnhlxeDFwL2FlqFK2TgdjDo_WGpuISVQuvdsZq37SyZTD6-oZyDjYY9MkfsZhhVRKrRM157CR5Hq04NeXzWA4vIP3m48YucV_OZfkFFQWvQAkAQfUSqBThvKpvWGcGYw9118lHV8MHXV3hCenb2lnfpW6Mza5cHou_PSuFV5N6ZPNcm-EkxxOczi_SNirF_EnOzjPzSH_Gsmjjuna58c2sAGrZeCUCI05_nEFcztZy4LxsBWyQq9dwQo6BSl6ZzbfVDLurJcD5vfiv2OMV6ibwEqhnLHrroVtGQfMGr_dJcUe6c2Y6Dj9AtBuzIo)
+
+    ### Esempi
+
+    Secondo questo schema se un canale ad esempio MITO prevede che lo stato iniziale di default sia To Be Authorized, allora è possibile indicare come stato iniziale lo stato Inserted. L'effetto è che il bonifico sarà in automatico sottoposto ai controlli anti frode e di validazione, nel caso tali controlli passino, in automatico verrà anche eseguito la conferma e la verifica WCL.
+
+
+    Se lo stato di default di un canale è Sent significa che il ciclo di vita e di invio sulla rete viene gestito direttamente da tale canale, quindi l'inserimento nello stato di default ha effetto di aggiungere il bonifico allo storico, nel caso invece venga richiesto che lo stato iniziale sia Authorized, il canale sta richiedendo che il messaggio xml legato al bonifico venga inviato in rete direttamente da CCP
+
+  version: 1.0.0
+tags:
+- name: Bonifici
+  description: Gestisci un bonifico
+- name: Info
+  description: Configurazioni e altre info
+paths:
+  /bonifico/banca:
+    post:
+      tags:
+      - Bonifici
+      summary: Crea un nuovo bonifico banca a banca
+      description: |
+        Il body della richiesta contiene tutti i campi necessari per inserire un nuovo bonifico nel sistema banca a banca.
+
+        Il canale dal quale arriva la richiesta invece è riconosciuto dalle informazioni di autenticazione fornite.
+
+        Il canale di ingresso permette di inserire un bonifico in uno stato diverso, configurabile per banca. è possibile inoltre modificare lo stato iniziale in cui il bonifico viene inserito, lo stato iniziale non puo' essere uno stato più avanzato rispetto allo stato iniziale di default del canale.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InserisciBonificoExtraSepaBancaRichiesta"
+      responses:
+        "201":
+          description: Bonifico creato con successo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BonificoExtraSepaRisposta"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /bonifico/cliente:
+    post:
+      tags:
+      - Bonifici
+      summary: Crea un nuovo bonifico account a account
+      description: |
+        Il body della richiesta contiene tutti i campi necessari per inserire un nuovo bonifico nel sistema account to account.
+
+        Il canale dal quale arriva la richiesta invece è riconosciuto dalle informazioni di autenticazione fornite.
+
+        Il canale di ingresso permette di inserire un bonifico in uno stato diverso, configurabile per banca. è possibile inoltre modificare lo stato iniziale in cui il bonifico viene inserito, lo stato iniziale non puo' essere uno stato più avanzato rispetto allo stato iniziale di default del canale.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InserisciBonificoExtraSepaClienteRichiesta"
+      responses:
+        "201":
+          description: Bonifico creato con successo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BonificoExtraSepaRisposta"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /bonifico/{id}:
+    get:
+      tags:
+      - Bonifici
+      summary: Ottiene lo stato di un bonifico
+      description: |
+        Ottiene lo stato attuale di un bonifico.
+      parameters:
+      - name: id
+        in: path
+        description: L'id del bonifico
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BonificoExtraSepaRisposta"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+    patch:
+      tags:
+      - Bonifici
+      summary: Modifica un bonifico
+      description: |
+        Il body della richiesta contiene i campi da aggiornare.
+
+        La transizione tra il nuovo e precedente stato deve essere permesso dalla macchina a stati dei bonifici.
+      parameters:
+      - name: id
+        in: path
+        description: L'id del bonifico da modificare
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RichiestaModificaBonificoStato"
+      responses:
+        "200":
+          description: Bonifico modificato con successo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BonificoExtraSepaRisposta"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /cip/results/verify_completed/{processID}/{idBonificoExtraSepa}:
+    post:
+      tags:
+      - CIP Controller
+      parameters:
+      - name: idBonificoExtraSepa
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - name: processID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CIPReply"
+      responses:
+        "201":
+          description: Created
+  /cip/results/{status}/{id}:
+    post:
+      tags:
+      - CIP Controller
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - name: status
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/CreditTransferStatus"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CIPReply"
+      responses:
+        "201":
+          description: Created
+  /info-banca:
+    get:
+      tags:
+      - Info
+      summary: Ottieni la configurazione della banca
+      description: |
+        Recupera la banca dell'utente dal quale proviene la richiesta,
+        e raccoglie le configurazioni relative ad essa.
+      responses:
+        "200":
+          description: Le configurazioni recuperate della banca
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigurazioneBanca"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /poll:
+    post:
+      tags:
+      - Poll Controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollBucket"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /sotto-tipologie-bonifico/{tipo}:
+    get:
+      tags:
+      - Info
+      summary: Ottieni i sottotipi disponibili
+      description: Ottieni tutti i sottotipi di bonifico disponibili per il dato tipo
+        di bonifico
+      parameters:
+      - name: tipo
+        in: path
+        description: Il tipo di bonifico del quale si vogliono sapere i sottotipi
+        required: true
+        schema:
+          $ref: "#/components/schemas/WireTransferType"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SottotipologieBonificoRisposta"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+components:
+  schemas:
+    AccountInfo:
+      title: Informazioni account
+      description: |-
+        Informazioni su un account.
+
+        L'account può essere sia un account IBAN, che un account ID.
+      type: object
+      oneOf:
+      - $ref: "#/components/schemas/IBANAccountInfo"
+      - $ref: "#/components/schemas/IDAccountInfo"
+    AltriIntermediari:
+      type: object
+      properties:
+        riferimentiCorrispondenteMittente:
+          $ref: "#/components/schemas/Rapporto"
+        bancaCorrispondenteMittente:
+          $ref: "#/components/schemas/Intermediario"
+        bancaCorrispondenteRicevente:
+          $ref: "#/components/schemas/Intermediario"
+        istitutoTerzoDiRimborso:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIstruttrice1:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIstruttrice2:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIstruttrice3:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIntermediaria1:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIntermediaria2:
+          $ref: "#/components/schemas/Intermediario"
+        bancaIntermediaria3:
+          $ref: "#/components/schemas/Intermediario"
+    Attore:
+      description: Informazioni su un attore
+      type: object
+      properties:
+        intestazione:
+          type: string
+        indirizzo:
+          $ref: "#/components/schemas/Indirizzo"
+        paeseDiResidenza:
+          description: Paese di residenza
+          type: string
+        organizzazione:
+          $ref: "#/components/schemas/InfoOrganizzazione"
+        privato:
+          $ref: "#/components/schemas/InfoPrivato"
+        rapporto:
+          $ref: "#/components/schemas/Rapporto"
+    AttoreFiscale:
+      type: object
+      properties:
+        identificativoFiscale:
+          type: string
+        identificativo:
+          type: string
+        tipoContribuente:
+          type: string
+        titolo:
+          type: string
+        intestazione:
+          type: string
+    BankInfo:
+      title: Informazioni banca
+      description: Informazioni su una specifica banca
+      required:
+      - bic
+      type: object
+      properties:
+        bic:
+          title: Bic
+          description: Codice BIC della banca
+          pattern: "^[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?$"
+          type: string
+        accountInfo:
+          $ref: "#/components/schemas/AccountInfo"
+    BonificoExtraSepaRisposta:
+      title: Dati di un bonifico nel sistema
+      description: Contiene tutti i campi relativi a un bonifico nel sistema
+      required:
+      - id
+      - tid
+      - infoStato
+      type: object
+      properties:
+        id:
+          description: Identificativo univoco del bonifico
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/UUID"
+        tid:
+          description: Identificativo della transazione
+          type: string
+        bonificoCliente:
+          $ref: "#/components/schemas/DatiBonificoExtraSepaClienteRisposta"
+        bonificoBanca:
+          $ref: "#/components/schemas/DatiBonificoExtraSepaBancaRisposta"
+        infoStato:
+          description: Informazioni sullo stato del bonifico
+          type: object
+          allOf:
+          - $ref: "#/components/schemas/InfoStato"
+    CIPReply:
+      type: object
+      properties:
+        requestID:
+          type: string
+        success:
+          type: boolean
+    CausaleBanca:
+      description: |
+        Causale di una transazione banca a banca.
+      required:
+      - causaleDescrittiva
+      type: object
+      properties:
+        causaleDescrittiva:
+          description: Rappresenta l'intera causale.
+          pattern: \S
+          type: string
+    CausaleCliente:
+      description: |
+        Causale di una transazione. Può essere sia descrittiva,
+        e in tal caso è composta da una singola stringa non strutturata, sia
+        strutturata.
+      type: object
+      properties:
+        causaleDescrittiva:
+          description: "Se presente, la causale è descrittiva, e rappresenta l'intera\
+            \ causale."
+          type: string
+        causaleStrutturata:
+          $ref: "#/components/schemas/CausaleStrutturata"
+    CausaleStrutturata:
+      title: Causale strutturata
+      description: |
+        Rappresenta una causale strutturata, contentent informazioni complete e accessibili
+        meccanicamente sul motivo per cui un determinato pagamento è stato effettuato.
+      type: object
+      properties:
+        documentoDiRiferimento:
+          title: Documenti di riferimento
+          description: Lista dei documenti di riferimento
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentoDiRiferimento"
+        importi:
+          $ref: "#/components/schemas/ImportiCausale"
+        informazioniCreditore:
+          $ref: "#/components/schemas/InformazioniCreditore"
+        informazioniEmittente:
+          description: Informazioni sull'emittente del bonifico
+          type: object
+          allOf:
+          - $ref: "#/components/schemas/Attore"
+        informazioniRicevente:
+          description: Informazioni sul ricevente del bonifico
+          type: object
+          allOf:
+          - $ref: "#/components/schemas/Attore"
+        informazioniFiscali:
+          $ref: "#/components/schemas/InformazioniFiscali"
+        dettagliPignoramento:
+          $ref: "#/components/schemas/InformazioniPignoramento"
+        ulterioriInformazioni:
+          description: Ulteriori informazioni sulla causale
+          type: string
+    CodePurpose:
+      type: object
+      properties:
+        code:
+          type: string
+    CodiceEIstruzione:
+      type: object
+      properties:
+        codice:
+          type: string
+        istruzioni:
+          type: string
+    CommissioniBanca:
+      description: |
+        Rappresenta una commissione bancaria associata a
+        un bonifico nel sistema di pagamento.
+      type: object
+      properties:
+        tipologia:
+          description: Tipologia della commissione
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/TipologiaCommissioni"
+        descrizione:
+          description: Descrizione della commissione
+          type: string
+        regolamento:
+          description: Tipologia del regolamento della commissione
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/RegolamentoCommissione"
+        importo:
+          description: Importo della commissione
+          type: number
+        divisa:
+          description: Divisa della commissione
+          type: string
+    CommissioniCliente:
+      title: Commissioni cliente
+      description: |
+        Rappresenta una commissione associata a un bonifico account-to-account nel sistema di pagamento.
+      type: object
+      properties:
+        descrizione:
+          description: Descrizione della commissione
+          type: string
+        regolamento:
+          description: Tipologia del regolamento della commissione
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/RegolamentoCommissione"
+        importo:
+          description: Importo della commissione
+          type: number
+        percentuale:
+          description: Percentuale del totale
+          type: number
+        min:
+          description: Importo minimo della commissione
+          type: number
+        max:
+          description: Importo massimo della commissione
+          type: number
+    ConfigurazioneBanca:
+      type: object
+      properties:
+        target:
+          $ref: "#/components/schemas/InfoCanale"
+        cbpr:
+          $ref: "#/components/schemas/InfoCanale"
+        listinoCommissioni:
+          type: boolean
+        sconfinamento:
+          type: boolean
+    ContoBancaDiCopertura:
+      title: Conto banca di copertura
+      description: |
+        Dati definenti il conto della banca coprente il bonifico.
+      type: object
+      properties:
+        rapportoBanca:
+          description: IBAN del conto della banca di copertura
+          type: string
+          example: BY86AKBB10100000002966000000
+        divisa:
+          description: Divisa della banca di copertura
+          type: string
+          example: euro
+        bic:
+          description: BIC della banca di copertura
+          type: string
+          example: PRACIT31XXX
+        intestazione:
+          description: Intestazione conto della banca di copertura
+          type: string
+    CreditTransferStatus:
+      enum:
+      - TO_BE_MANAGED
+      - INSERITO
+      - DA_CONFERMARE
+      - CONFERMATO
+      - ELIMINATO
+      - WCL_NON_PASSATA
+      - WCL_NEGATA
+      - DA_AUTORIZZARE
+      - AUTORIZZATO
+      - INVIATO
+      - REGOLATO
+      - IN_ERRORE
+      - NON_AUTORIZZATO_RIMBORSO_PROGRAMMATO
+      - NON_AUTORIZZATO
+      - RIFIUTATO_RIMBORSO_PROGRAMMATO
+      - RIFIUTATO
+      - STORNO_RICHIESTO
+      - STORNO_INVIATO
+      - STORNO_ACCETTATO
+      - STORNO_RIFIUTATO
+      - STORNO_RIMBORSO_PROGRAMMATO
+      - RIMBORSATO
+      type: string
+    DatiBonificoExtraSepaBancaRisposta:
+      description: Dati di un bonifico ExtraSepa tra banche già inserito nel sistema
+      required:
+      - sottoTipologiaBonifico
+      - ordinante
+      - bancaOrdinante
+      - beneficiario
+      - bancaDestinataria
+      - bancaDelBeneficiario
+      - altriIntermediari
+      - sistemaDiRegolamento
+      - dettagliBonifico
+      - dettagliCausale
+      - riferimentiAggiuntivi
+      type: object
+      properties:
+        sottoTipologiaBonifico:
+          $ref: "#/components/schemas/SottoTipologiaBonificoRisposta"
+        ordinante:
+          $ref: "#/components/schemas/Intermediario"
+        bancaOrdinante:
+          $ref: "#/components/schemas/Intermediario"
+        beneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDestinataria:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDelBeneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        altriIntermediari:
+          $ref: "#/components/schemas/AltriIntermediari"
+        sistemaDiRegolamento:
+          $ref: "#/components/schemas/InfoSistemaDiRegolamento"
+        dettagliBonifico:
+          $ref: "#/components/schemas/DettagliBonificoExtraSepaBanca"
+        dettagliCausale:
+          $ref: "#/components/schemas/DettagliCausaleBanca"
+        riferimentiAggiuntivi:
+          $ref: "#/components/schemas/RiferimentiAggiuntivi"
+        user:
+          type: string
+    DatiBonificoExtraSepaClienteRisposta:
+      description: Dati di un bonifico ExtraSepa tra account già inserito nel sistema
+      required:
+      - sottoTipologiaBonifico
+      - ordinante
+      - soggettoIstruttore
+      - debitoreEffettivo
+      - bancaOrdinante
+      - beneficiario
+      - beneficiarioEffettivo
+      - bancaDestinataria
+      - bancaDelBeneficiario
+      - altriIntermediari
+      - sistemaDiRegolamento
+      - dettagliBonifico
+      - dettagliCausale
+      - riferimentiAggiuntivi
+      type: object
+      properties:
+        sottoTipologiaBonifico:
+          $ref: "#/components/schemas/SottoTipologiaBonificoRisposta"
+        ordinante:
+          $ref: "#/components/schemas/InfoOrdinante"
+        soggettoIstruttore:
+          $ref: "#/components/schemas/Attore"
+        debitoreEffettivo:
+          $ref: "#/components/schemas/Attore"
+        bancaOrdinante:
+          $ref: "#/components/schemas/Intermediario"
+        beneficiario:
+          $ref: "#/components/schemas/Attore"
+        beneficiarioEffettivo:
+          $ref: "#/components/schemas/Attore"
+        bancaDestinataria:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDelBeneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        altriIntermediari:
+          $ref: "#/components/schemas/AltriIntermediari"
+        sistemaDiRegolamento:
+          $ref: "#/components/schemas/InfoSistemaDiRegolamento"
+        dettagliBonifico:
+          $ref: "#/components/schemas/DettagliBonificoExtraSepaCliente"
+        dettagliCausale:
+          $ref: "#/components/schemas/DettagliCausaleCliente"
+        riferimentiAggiuntivi:
+          $ref: "#/components/schemas/RiferimentiAggiuntivi"
+        user:
+          type: string
+    DettagliBonificoExtraSepaBanca:
+      required:
+      - dettagliImporto
+      - dettagliDate
+      type: object
+      properties:
+        dettagliImporto:
+          $ref: "#/components/schemas/DettagliImporto"
+        dettagliDate:
+          $ref: "#/components/schemas/DettagliDate"
+        contoBancaDiCopertura:
+          $ref: "#/components/schemas/ContoBancaDiCopertura"
+        dettagliCommissioni:
+          $ref: "#/components/schemas/DettagliCommissioni"
+        dettagliNotifica:
+          $ref: "#/components/schemas/DettagliNotifica"
+    DettagliBonificoExtraSepaCliente:
+      required:
+      - dettagliImporto
+      - dettagliDate
+      type: object
+      properties:
+        dettagliImporto:
+          $ref: "#/components/schemas/DettagliImporto"
+        dettagliDate:
+          $ref: "#/components/schemas/DettagliDate"
+        contoBancaDiCopertura:
+          $ref: "#/components/schemas/ContoBancaDiCopertura"
+        dettagliCommissioni:
+          $ref: "#/components/schemas/DettagliCommissioni1"
+    DettagliCausaleBanca:
+      title: Dettagli causale
+      description: |
+        Informazioni dettagliate sulla causale di un bonifico.
+      type: object
+      properties:
+        codiceCausaleTransazione:
+          title: Codice causale
+          type: string
+        causale:
+          type: array
+          items:
+            $ref: "#/components/schemas/CausaleBanca"
+    DettagliCausaleCliente:
+      title: Dettagli causale
+      description: |
+        Informazioni dettagliate sulla causale di un bonifico.
+      type: object
+      properties:
+        codiceCausaleTransazione:
+          title: Codice causale
+          type: string
+        causale:
+          type: array
+          items:
+            $ref: "#/components/schemas/CausaleCliente"
+    DettagliCommissioni:
+      type: object
+      properties:
+        commissioniBanca:
+          $ref: "#/components/schemas/CommissioniBanca"
+    DettagliCommissioni1:
+      type: object
+      properties:
+        commissioniCliente:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommissioniCliente"
+        commissioniBanca:
+          $ref: "#/components/schemas/CommissioniBanca"
+    DettagliDate:
+      title: Dettagli date
+      description: Informazioni sulle tempistiche del bonifico
+      required:
+      - dataCreazione
+      - dataEsecuzione
+      - dataValutaOrdinante
+      - dataRegolamentoBancaBeneficiario
+      type: object
+      properties:
+        dataCreazione:
+          $ref: "#/components/schemas/LocalDate"
+        dataEsecuzione:
+          $ref: "#/components/schemas/LocalDate"
+        dataValutaOrdinante:
+          $ref: "#/components/schemas/LocalDate"
+        dataRegolamentoBancaBeneficiario:
+          $ref: "#/components/schemas/LocalDate"
+    DettagliImporto:
+      title: Dettagli importo
+      description: Informazioni sull'importo del bonifico
+      required:
+      - importo
+      - divisa
+      - cambio
+      type: object
+      properties:
+        importo:
+          type: number
+        divisa:
+          type: string
+        cambio:
+          type: number
+    DettagliNotifica:
+      type: object
+      properties:
+        notifica:
+          type: string
+    DettagliRecordFiscale:
+      type: object
+      properties:
+        anno:
+          type: string
+        periodo:
+          type: string
+        periodoDa:
+          $ref: "#/components/schemas/LocalDate"
+        periodoA:
+          $ref: "#/components/schemas/LocalDate"
+        importo:
+          $ref: "#/components/schemas/Importo"
+    DettagliRegulatoryReporting:
+      type: object
+      properties:
+        dettaglio:
+          type: string
+        data:
+          $ref: "#/components/schemas/LocalDate"
+        importo:
+          $ref: "#/components/schemas/Importo"
+        paese:
+          maxLength: 2
+          type: string
+        informazioniAggiuntive:
+          type: string
+    DettaglioRiferimentiAggiuntivi:
+      type: object
+      properties:
+        modalitaAvvisoPagamento:
+          type: string
+        emailDestinatarioReporting:
+          type: string
+        intestazioneDestinatarioReporting:
+          type: string
+        indirizzoPostale:
+          $ref: "#/components/schemas/Indirizzo"
+    DocumentoDiRiferimento:
+      title: Documento di riferimento
+      description: |
+        Un documento fornito all'interno di una causale.
+      type: object
+      properties:
+        tipo:
+          description: Tipo del documento
+          type: string
+        descrizione:
+          description: Descrizione del documento
+          type: string
+        emittente:
+          description: Ente emittente il documento
+          type: string
+        numero:
+          description: Numento documento
+          type: string
+        data:
+          description: Data del documento
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDate"
+        linee:
+          type: array
+          items:
+            $ref: "#/components/schemas/LineaDocumentoDiRiferimento"
+    IBANAccountInfo:
+      title: Account IBAN
+      description: Un account identificato dall'IBAN
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          pattern: AD1400080001001234567890
+          type: string
+    IDAccountInfo:
+      title: Account ID
+      description: Un account identificato da un ID
+      required:
+      - accountID
+      type: object
+      properties:
+        accountID:
+          pattern: \S
+          type: string
+    IdLineaDocumento:
+      type: object
+      properties:
+        codice:
+          type: string
+        codiceProprietario:
+          type: string
+        emittente:
+          type: string
+        numero:
+          type: string
+        data:
+          $ref: "#/components/schemas/LocalDate"
+    IdentificativoEImporto:
+      type: object
+      properties:
+        codice:
+          type: string
+        codiceProprietario:
+          type: string
+        importo:
+          $ref: "#/components/schemas/Importo"
+    ImportiCausale:
+      type: object
+      properties:
+        dovuto:
+          $ref: "#/components/schemas/Importo"
+        sconti:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdentificativoEImporto"
+        notaDiCredito:
+          $ref: "#/components/schemas/Importo"
+        imposte:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdentificativoEImporto"
+        rettifiche:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rettifica"
+        disposto:
+          $ref: "#/components/schemas/Importo"
+    Importo:
+      description: Importo di una transazione
+      required:
+      - importo
+      - divisa
+      type: object
+      properties:
+        importo:
+          title: Importo
+          description: Il valore numerico dell'importo nella valuta impostata.
+          minimum: 0
+          exclusiveMinimum: true
+          type: number
+        divisa:
+          title: Divisa
+          description: La valuta dell'importo.
+          maxLength: 3
+          pattern: \S
+          type: string
+          example: EUR
+    Indirizzo:
+      description: Un indirizzo fisico
+      type: object
+      properties:
+        indirizzo:
+          type: string
+        citta:
+          type: string
+        cap:
+          type: string
+        paese:
+          maxLength: 2
+          type: string
+        divisione:
+          type: string
+        sottoDivisione:
+          type: string
+        numeroCivico:
+          type: string
+        edificio:
+          type: string
+        piano:
+          type: string
+        cassettaPostale:
+          type: string
+        stanza:
+          type: string
+        localita:
+          type: string
+        distretto:
+          type: string
+        provincia:
+          type: string
+        lineaIndirizzo:
+          type: string
+    InfoCanale:
+      type: object
+      properties:
+        attivo:
+          type: boolean
+        tramitatoDa:
+          type: string
+        oraCutOff:
+          format: int32
+          type: integer
+        minutoCutOff:
+          format: int32
+          type: integer
+    InfoNDG:
+      type: object
+      properties:
+        ndg:
+          type: string
+        nome:
+          type: string
+    InfoOrdinante:
+      type: object
+      properties:
+        infoAttore:
+          $ref: "#/components/schemas/Attore"
+        presentatore:
+          type: array
+          items:
+            $ref: "#/components/schemas/InfoNDG"
+        titolareEffettivo:
+          type: array
+          items:
+            $ref: "#/components/schemas/InfoNDG"
+    InfoOrganizzazione:
+      type: object
+      properties:
+        bic:
+          type: string
+        codiceLEI:
+          type: string
+        identificativoOrganizzazione1:
+          type: string
+        codiceIdentificativoOrganizzazione1:
+          type: string
+        codiceProprietarioIdentificativoOrganizzazione1:
+          type: string
+        emittente1:
+          type: string
+        identificativoOrganizzazione2:
+          type: string
+        codiceIdentificativoOrganizzazione2:
+          type: string
+        codiceProprietarioIdentificativoOrganizzazione2:
+          type: string
+        emittente2:
+          type: string
+    InfoPrivato:
+      title: Informazioni Privato
+      description: Informazioni su un privato cittadino
+      type: object
+      properties:
+        dataDiNascita:
+          $ref: "#/components/schemas/LocalDate"
+        provinciaDiNascita:
+          type: string
+        cittaDiNascita:
+          type: string
+        paeseDiNascita:
+          type: string
+        identificativoSoggetto1:
+          type: string
+        codiceIdentificativoSoggetto1:
+          type: string
+        codiceProprietarioIdentificativoSoggetto1:
+          type: string
+        emittente1:
+          type: string
+        identificativoSoggetto2:
+          type: string
+        codiceIdentificativoSoggetto2:
+          type: string
+        codiceProprietarioIdentificativoSoggetto2:
+          type: string
+        emittente2:
+          type: string
+    InfoSistemaDiRegolamento:
+      required:
+      - sistemaDiRegolamento
+      type: object
+      properties:
+        sistemaDiRegolamento:
+          $ref: "#/components/schemas/SistemaDiRegolamento"
+        priorita:
+          $ref: "#/components/schemas/Priorita"
+        da:
+          $ref: "#/components/schemas/Instant"
+        a:
+          $ref: "#/components/schemas/Instant"
+        orarioAccredito:
+          $ref: "#/components/schemas/Instant"
+        scadenzaUltima:
+          $ref: "#/components/schemas/Instant"
+        stp:
+          type: boolean
+    InfoStato:
+      required:
+      - stato
+      type: object
+      properties:
+        stato:
+          description: Stato del bonifico
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/CreditTransferStatus"
+    InformazioniCreditore:
+      type: object
+      properties:
+        codice:
+          type: string
+        codiceProprietario:
+          type: string
+        emittente:
+          type: string
+        riferimentoUnivoco:
+          type: string
+    InformazioniFiscali:
+      type: object
+      properties:
+        creditore:
+          $ref: "#/components/schemas/AttoreFiscale"
+        debitore:
+          $ref: "#/components/schemas/AttoreFiscale"
+        debitoreEffettivo:
+          $ref: "#/components/schemas/AttoreFiscale"
+        amministratoreDiRiferimento:
+          type: string
+        dettaglioImpostaRiferimento:
+          type: string
+        metodo:
+          type: string
+        imponibile:
+          $ref: "#/components/schemas/Importo"
+        imposta:
+          $ref: "#/components/schemas/Importo"
+        scadenza:
+          $ref: "#/components/schemas/LocalDate"
+        numeroProgressivoDichiarazione:
+          type: number
+        recordFiscali:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecordFiscale"
+    InformazioniPignoramento:
+      type: object
+      properties:
+        codice:
+          type: string
+        codiceProprietario:
+          type: string
+        emittente:
+          type: string
+        terzoPignorato:
+          $ref: "#/components/schemas/Attore"
+        gestorePignoramento:
+          $ref: "#/components/schemas/Attore"
+        identificativo:
+          type: string
+        data:
+          $ref: "#/components/schemas/LocalDate"
+        importo:
+          $ref: "#/components/schemas/Importo"
+        assicurazioneSanitaria:
+          type: boolean
+        disoccupato:
+          type: boolean
+    InformazioniRegulatoryReporting:
+      type: object
+      properties:
+        tipo:
+          $ref: "#/components/schemas/TipoDiRegulatoryReporting"
+        autoritaRichiedente:
+          type: string
+        paeseAutoritaRichiedente:
+          maxLength: 2
+          type: string
+        dettagliRegulatoryReporting:
+          type: array
+          items:
+            $ref: "#/components/schemas/DettagliRegulatoryReporting"
+    InserisciBonificoExtraSepaBancaRichiesta:
+      description: |
+        Dati necessari per inserire un bonifico banca a banca nel sistema.
+      required:
+      - sottoTipologiaBonifico
+      - ordinante
+      - bancaOrdinante
+      - beneficiario
+      - bancaDestinataria
+      - bancaDelBeneficiario
+      - altriIntermediari
+      - sistemaDiRegolamento
+      - dettagliBonifico
+      - dettagliCausale
+      - riferimentiAggiuntivi
+      type: object
+      properties:
+        sottoTipologiaBonifico:
+          $ref: "#/components/schemas/SottoTipologiaBonificoRichiesta"
+        ordinante:
+          $ref: "#/components/schemas/Intermediario"
+        bancaOrdinante:
+          $ref: "#/components/schemas/Intermediario"
+        beneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDestinataria:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDelBeneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        altriIntermediari:
+          $ref: "#/components/schemas/AltriIntermediari"
+        sistemaDiRegolamento:
+          $ref: "#/components/schemas/InfoSistemaDiRegolamento"
+        dettagliBonifico:
+          $ref: "#/components/schemas/DettagliBonificoExtraSepaBanca"
+        dettagliCausale:
+          $ref: "#/components/schemas/DettagliCausaleBanca"
+        riferimentiAggiuntivi:
+          $ref: "#/components/schemas/RiferimentiAggiuntivi"
+        user:
+          type: string
+    InserisciBonificoExtraSepaClienteRichiesta:
+      description: |
+        Dati necessari per inserire un bonifico account to account nel sistema.
+      required:
+      - sottoTipologiaBonifico
+      - ordinante
+      - soggettoIstruttore
+      - debitoreEffettivo
+      - bancaOrdinante
+      - beneficiario
+      - beneficiarioEffettivo
+      - bancaDestinataria
+      - bancaDelBeneficiario
+      - altriIntermediari
+      - sistemaDiRegolamento
+      - dettagliBonifico
+      - dettagliCausale
+      - riferimentiAggiuntivi
+      type: object
+      properties:
+        sottoTipologiaBonifico:
+          $ref: "#/components/schemas/SottoTipologiaBonificoRichiesta"
+        ordinante:
+          $ref: "#/components/schemas/InfoOrdinante"
+        soggettoIstruttore:
+          $ref: "#/components/schemas/Attore"
+        debitoreEffettivo:
+          $ref: "#/components/schemas/Attore"
+        bancaOrdinante:
+          $ref: "#/components/schemas/Intermediario"
+        beneficiario:
+          $ref: "#/components/schemas/Attore"
+        beneficiarioEffettivo:
+          $ref: "#/components/schemas/Attore"
+        bancaDestinataria:
+          $ref: "#/components/schemas/Intermediario"
+        bancaDelBeneficiario:
+          $ref: "#/components/schemas/Intermediario"
+        altriIntermediari:
+          $ref: "#/components/schemas/AltriIntermediari"
+        sistemaDiRegolamento:
+          $ref: "#/components/schemas/InfoSistemaDiRegolamento"
+        dettagliBonifico:
+          $ref: "#/components/schemas/DettagliBonificoExtraSepaCliente"
+        dettagliCausale:
+          $ref: "#/components/schemas/DettagliCausaleCliente"
+        riferimentiAggiuntivi:
+          $ref: "#/components/schemas/RiferimentiAggiuntivi"
+        user:
+          type: string
+    Instant:
+      format: date-time
+      type: string
+      example: 2022-03-10T16:15:50Z
+    Intermediario:
+      type: object
+      properties:
+        bic:
+          type: string
+        intestazione:
+          type: string
+        codiceLEI:
+          type: string
+        codiceSistemaClearing:
+          type: string
+        identificativoClearing:
+          type: string
+        rapporto:
+          $ref: "#/components/schemas/Rapporto"
+        indirizzo:
+          $ref: "#/components/schemas/Indirizzo"
+    LineaDocumentoDiRiferimento:
+      type: object
+      properties:
+        identificativi:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdLineaDocumento"
+        importi:
+          $ref: "#/components/schemas/ImportiCausale"
+    LocalDate:
+      format: date
+      type: string
+      example: 2022-03-10
+    NumeroRapportoAltroIdentificativo:
+      title: Altro identificativo
+      description: Rapporto rappresentato da un altro identificativo
+      pattern: "^[^A-Z]{2}.*$"
+      type: string
+    NumeroRapportoIban:
+      title: Identificativo IBAN
+      description: Rapporto rappresentato da un IBAN
+      pattern: "^[A-Z]{2}.*$"
+      type: string
+      example: AD1400080001001234567890
+    PollBucket:
+      type: object
+      properties:
+        bucketID:
+          type: string
+        resourceName:
+          type: string
+        resourceID:
+          $ref: "#/components/schemas/UUID"
+        profile:
+          type: string
+        success:
+          type: boolean
+    Priorita:
+      enum:
+      - URGENTE
+      - ALTA
+      - NORMALE
+      type: string
+    PrioritaTransazione:
+      enum:
+      - NORMALE
+      - ALTA
+      type: string
+    ProprietaryPurpose:
+      type: object
+      properties:
+        proprietary:
+          type: string
+    Purpose:
+      type: object
+      oneOf:
+      - $ref: "#/components/schemas/CodePurpose"
+      - $ref: "#/components/schemas/ProprietaryPurpose"
+    Rapporto:
+      description: Rapporto tra la banca e un attore. Usualmente corrisponde a un
+        conto aperto.
+      required:
+      - tipoRapporto
+      type: object
+      properties:
+        numeroRapporto:
+          description: Identificativo del rapporto
+          type: string
+          oneOf:
+          - $ref: "#/components/schemas/NumeroRapportoIban"
+          - $ref: "#/components/schemas/NumeroRapportoAltroIdentificativo"
+        divisa:
+          description: Divisa del conto
+          type: string
+        codiceTipoConto:
+          description: Codice tipo conto
+          type: string
+        dettaglioTipoConto:
+          description: Descrizione tipo conto
+          type: string
+        intestazioneConto:
+          description: Intestazione del conto
+          type: string
+        codiceTipoAlias:
+          description: Codice tipo identificativo alias
+          type: string
+        descrizioneAlias:
+          description: Descrizione tipo identificativo alias
+          type: string
+        dettaglioIdentificativoAlias:
+          description: Dettaglio tipo identificativo alias
+          type: string
+        codiceIdentificativoConto:
+          description: Codice identificativo conto
+          type: string
+        descrizioneIdentificativoConto:
+          description: Descrizione identificativo conto
+          type: string
+        emittente:
+          description: Emittente del conto
+          type: string
+        codiceFiliale:
+          description: Codice filiale della banca
+          type: string
+        denominazioneFiliale:
+          description: Denominazione filiale della banca
+          type: string
+        tipoRapporto:
+          $ref: "#/components/schemas/TipoRapporto"
+        ndg:
+          type: string
+    RecordFiscale:
+      type: object
+      properties:
+        codice:
+          type: string
+        categoria:
+          type: string
+        dettagliCategoria:
+          type: string
+        statusContribuente:
+          type: string
+        identificativoDichiarazione:
+          type: string
+        codiceModelloDichiarazione:
+          type: string
+        annoRiferimentoDichiarazione:
+          type: string
+        periodoRiferimentoDichiarazione:
+          type: string
+        periodoRiferimentoDichiarazioneDa:
+          $ref: "#/components/schemas/LocalDate"
+        periodoRiferimentoDichiarazioneA:
+          $ref: "#/components/schemas/LocalDate"
+        percentualeImposta:
+          type: number
+        imponibile:
+          $ref: "#/components/schemas/Importo"
+        imposta:
+          $ref: "#/components/schemas/Importo"
+        dettagli:
+          type: array
+          items:
+            $ref: "#/components/schemas/DettagliRecordFiscale"
+        informazioniAggiuntive:
+          type: string
+    RegolamentoCommissione:
+      title: Regolamento commissione
+      description: |
+        Rappresenta il tipo di regolamento della commissione per una transazione bancaria.
+      enum:
+      - EURO
+      - DIVISA
+      type: string
+    Rettifica:
+      type: object
+      properties:
+        importo:
+          $ref: "#/components/schemas/Importo"
+        verso:
+          type: string
+        motivo:
+          type: string
+        informazioniAggiuntive:
+          type: string
+    RichiestaModificaBonificoStato:
+      type: object
+      properties:
+        nuovoStato:
+          $ref: "#/components/schemas/CreditTransferStatus"
+    RiferimentiAggiuntivi:
+      type: object
+      properties:
+        altroIdentificativoPagamento:
+          type: string
+        riferimentiAggiuntivi1:
+          $ref: "#/components/schemas/DettaglioRiferimentiAggiuntivi"
+        riferimentiAggiuntivi2:
+          $ref: "#/components/schemas/DettaglioRiferimentiAggiuntivi"
+        istruzioniBancaRicevente1:
+          type: string
+        istruzioniBancaRicevente2:
+          type: string
+        istruzioniBancaRicevente3:
+          type: string
+        istruzioniBancaRicevente4:
+          type: string
+        istruzioniBancaRicevente5:
+          type: string
+        istruzioniBancaRicevente6:
+          type: string
+        istruzioneBancaDelBeneficiario1:
+          $ref: "#/components/schemas/CodiceEIstruzione"
+        istruzioneBancaDelBeneficiario2:
+          $ref: "#/components/schemas/CodiceEIstruzione"
+        prioritaTransazione:
+          $ref: "#/components/schemas/PrioritaTransazione"
+        codiceLivelloDiServizio:
+          type: string
+        dettaglioLivelloDiServizio:
+          type: string
+        classificazionePagamento:
+          type: string
+        dettaglioClassificazionePagamento:
+          type: string
+        codiceTransazione:
+          type: string
+        dettaglioIdentificativoTransazione:
+          type: string
+        codiceTipoServizio:
+          type: string
+        dettaglioTipoServizio:
+          type: string
+        valoreCambioIstruito:
+          type: number
+        regulatoryReporting:
+          type: array
+          items:
+            $ref: "#/components/schemas/InformazioniRegulatoryReporting"
+    SistemaDiRegolamento:
+      enum:
+      - TARGET
+      - NO_TARGET
+      type: string
+    SottoTipologiaBonificoRichiesta:
+      title: Sottotipologia del bonifico
+      description: |
+        Sotto-tipologia per il bonifico “Area Extra Sepa”.
+
+        Le sotto-tipologie sono configurabili per banca ma, al massimo, sono le seguenti:
+        - Pacs.008
+        - Pacs.008 con Pacs.009 COV
+        - Pacs.008 con Pacs.009 COV e MT999
+        - Pacs.008 con MT999
+      required:
+      - tipo
+      type: object
+      properties:
+        tipo:
+          pattern: \S
+          type: string
+          example: Pacs.008
+    SottoTipologiaBonificoRisposta:
+      title: Dati sottotipologia del bonifico
+      description: |
+        Sotto-tipologia per il bonifico “Area Extra Sepa”, con dati aggiuntivi.
+      required:
+      - tipo
+      type: object
+      properties:
+        tipo:
+          description: Nome del tipo
+          pattern: \S
+          type: string
+          example: Pacs.008
+        descrizione:
+          description: Descrizione del tipo
+          type: string
+          example: Bonifico Clientela Extra-Sepa
+        conNotifica:
+          description: Se causa la creazione di una notifica
+          type: boolean
+        bancaABanca:
+          description: Se la tipologia bonifico è banca a banca o meno
+          type: boolean
+    SottotipologieBonificoRisposta:
+      title: Elenco di sottotipi disponibili
+      description: |
+        Elenco di tutti i sottotipi disponibili per un dato tipo di bonifico
+        e una specifica banca.
+      type: object
+      properties:
+        sottoTipologiaBonifici:
+          title: Elenco dei sottotipi
+          type: array
+          items:
+            $ref: "#/components/schemas/SottoTipologiaBonificoRisposta"
+    TipoAttore:
+      title: Tipo attore
+      description: |
+        Rappresenta il tipo di attore coinvolto nella transazione di pagamento,
+        secondo lo schema ISO 20022 `PartyIdentification135`.
+
+        Ogni valore di questa enumerazione corrisponde a una specifica entità che può essere
+        coinvolta nel processo di trasferimento di fondi.
+      enum:
+      - ORDINANTE
+      - SOGGETTO_ISTRUTTORE
+      - ORDINANTE_EFFETTIVO
+      - BENEFICIARIO
+      - BENEFICIARIO_EFFETTIVO
+      type: string
+    TipoDiRegulatoryReporting:
+      enum:
+      - CREDITORE
+      - DEBITORE
+      - ENTRAMBI
+      type: string
+    TipoRapporto:
+      enum:
+      - RAPPORTO
+      - SOTTO_CONTO
+      type: string
+    TipologiaCommissioni:
+      enum:
+      - SHARED
+      - CREDITOR
+      - DEBTOR
+      type: string
+    UUID:
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      type: string
+    WireTransferType:
+      title: Tipo bonifico
+      description: |
+        Tipi di bonifico gestiti dal sistema.
+
+        I valori possibili sono:
+        - `BANCA`: Bonifico banca-banca
+        - `CLIENTE`: Bonifico cliente-cliente
+        - `ENTRAMBI`: Entrambe le tipologie
+      enum:
+      - BANCA
+      - CLIENTE
+      - ENTRAMBI
+      type: string

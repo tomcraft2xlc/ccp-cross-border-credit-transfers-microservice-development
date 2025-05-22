@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:eu.gps.netgat.ec.global.application.command" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:eu.gps.netgat.ec.global.application.command" elementFormDefault="qualified">
+	<xs:element name="globalApplicationCommand" type="ApplicationCommandType"/>
+	<xs:complexType name="ApplicationCommandType">
+		<xs:sequence>
+			<xs:element name="header" type="HeaderType" />
+            <xs:element name="notificationData" minOccurs="0" type="DataType"/>
+			<xs:element name="data" minOccurs="0" type="DataType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HeaderType">
+		<xs:sequence>
+			<xs:element name="applicationId" minOccurs="0" type="Max10Text"/>
+			<xs:element name="applicationChannelId" minOccurs="0" type="Max10Text"/>
+			<xs:element name="commandType" minOccurs="0" type="CommandTypeEnum"/>
+			<xs:element name="applicationReference" minOccurs="0" type="Max35Text"/>
+			<xs:element name="localAddress" minOccurs="0"  type="AddressType"/>
+			<xs:element name="remoteAddress" minOccurs="0" type="AddressType"/>
+			<xs:element name="remoteApplication" minOccurs="0" type="Max30Text"/>
+			<xs:element name="serviceId" minOccurs="0" type="Max30Text"/>
+			<xs:element name="category" minOccurs="0" type="Max10Text"/>
+			<xs:element name="requestType" minOccurs="0" type="Max30Text"/>
+                        <xs:element name="originalRequestType" minOccurs="0" type="Max30Text"/>
+			<xs:element name="compression" minOccurs="0"  type="CompressionEnum"/>
+			<xs:element name="priority" minOccurs="0" type="PriorityType"/>
+			<xs:element name="possibleDuplicateFlag" minOccurs="0" type="PossibleDuplicateFlagEnum"/>
+			<xs:element name="aggregationKey" minOccurs="0" type="Max50Text"/>
+			<xs:element name="sortingKey" minOccurs="0" type="Max50Text"/>
+			<xs:element name="userParameter1" minOccurs="0" type="Max100Text"/>
+			<xs:element name="userParameter2" minOccurs="0" type="Max100Text"/>
+                        <xs:element name="externalInfo" minOccurs="0" type="ExternalInfoType"/>
+			<xs:element name="applicationCorrelationKey" minOccurs="0" type="Max100Text"/>
+			<xs:element name="correlationKey" minOccurs="0" type="Max30Text"/>
+			<xs:element name="timestamp" minOccurs="0" type="ISODateTime"/>
+                        <xs:element name="originalApplicationId" minOccurs="0" type="Max10Text"/>
+                        <xs:element name="errorInfo" minOccurs="0" type="ErronInfoType"/>
+			<xs:element name="progressive" minOccurs="0" type="TotalType"/>
+			<xs:element name="total" minOccurs="0" type="TotalType"/>
+		</xs:sequence>
+	</xs:complexType>
+    <xs:complexType name="ErronInfoType">
+        <xs:choice>
+            <xs:element name="error" type="ErrorType"/>
+            <xs:element name="externalError" type="ExternalErrorType"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="ErrorType">
+        <xs:sequence>
+            <xs:element name="code" type="Max8Text"/>
+            <xs:element name="description" minOccurs="0" type="Max100Text"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ExternalErrorType">
+        <xs:sequence>
+            <xs:element name="code" type="Max8Text"/>
+            <xs:element name="description" minOccurs="0" type="Max100Text"/>
+            <xs:element name="data" minOccurs="0" type="Max1000Text"/>
+        </xs:sequence>
+    </xs:complexType>
+	<xs:complexType name="DataType">
+		<xs:choice maxOccurs="1">
+            <xs:element name="dataEncoded" type="Base64DataType"/>
+            <xs:element name="xmlData" type="XmlDataType"/>
+        </xs:choice>
+	</xs:complexType>
+	<xs:complexType name="Base64DataType">
+		<xs:sequence>
+			<xs:element name="buffer" type="xs:base64Binary" />
+			<xs:element name="length" type="xs:nonNegativeInteger" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="XmlDataType">
+		<xs:complexContent>
+			<xs:extension base="xs:anyType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element name="value" type="Max100Text" />
+			<xs:element name="type" type="AddressTypeEnum" />
+		</xs:sequence>
+	</xs:complexType>
+    <xs:complexType name="ExternalInfoType">
+        <xs:sequence>
+            <xs:element name="reassigned" type="xs:boolean"/>
+            <xs:element name="copy" type="xs:boolean"/>
+            <xs:element name="dataEntry" type="xs:boolean"/>
+			<xs:element name="repair" type="xs:boolean"/>
+            <xs:element name="intermedAddress" minOccurs="0" type="AddressType"/> 
+            <xs:element name="creationDateTime" minOccurs="0" type="ISODateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+	<xs:simpleType name="AddressTypeEnum">
+		<!-- Rimappa i valori ammessi per Address -->
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A" /> <!-- ABI -->
+			<xs:enumeration value="B" /> <!-- BIC -->
+            <xs:enumeration value="C" /> <!-- Custom -->
+			<xs:enumeration value="D" /> <!-- Distinguished name -->
+			<xs:enumeration value="R" /> <!-- RNI -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max50Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max1Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max10Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max35Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max30Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max100Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max254Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="254"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max256Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max8Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="8" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Max1000Text">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="1000" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CommandTypeEnum">
+		<!-- Rimappa i valori del CommandType -->
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SEND"/>
+            <xs:enumeration value="GROUP"/>
+            <xs:enumeration value="RRESTART"/>
+            <xs:enumeration value="SRESTART"/>
+            <xs:enumeration value="SNACK"/>
+            <xs:enumeration value="RNACK"/>
+            <xs:enumeration value="RLTSEND"/>
+            <xs:enumeration value="RLTRECEIVE"/>
+            <xs:enumeration value="APP_REJECT"/>
+            <xs:enumeration value="APP_ACCEPT"/>
+            <xs:enumeration value="APP_ACK"/>
+            <xs:enumeration value="APP_NACK"/>
+            <xs:enumeration value="APP_PDNOT"/>
+            <xs:enumeration value="APP_NDNOT"/>
+            <xs:enumeration value="SMMREJECT"/>
+            <xs:enumeration value="SNDELNOT"/>
+            <xs:enumeration value="RMMREJECT"/>
+            <xs:enumeration value="RDELIVERY"/>
+            <xs:enumeration value="RMSGCOPY"/>
+            <xs:enumeration value="SMSGCOPY"/>
+            <xs:enumeration value="SMMACCEPT"/>
+            <xs:enumeration value="SACK"/>
+            <xs:enumeration value="SPDELNOT"/>
+            <xs:enumeration value="RMMACCEPT"/>
+            <xs:enumeration value="SRELEASE"/>
+            <xs:enumeration value="RRELEASE"/>
+            <xs:enumeration value="SGROUP"/>
+            <xs:enumeration value="RECEIVE"/>
+            <xs:enumeration value="ACK"/>
+            <xs:enumeration value="RACK"/>
+            <xs:enumeration value="RGROUP"/>
+            <xs:enumeration value="SWDELNOT"/>
+            <xs:enumeration value="SPAUTNOT"/>
+            <xs:enumeration value="SNAUTNOT"/>
+            <xs:enumeration value="DELETE"/>
+            <xs:enumeration value="TMOT_OVSZ"/>
+            <xs:enumeration value="COA"/>
+            <xs:enumeration value="COD"/>
+            <xs:enumeration value="PROVIDE"/>
+            <xs:enumeration value="SFMREJECT"/>
+            <xs:enumeration value="RNDELNOT"/>
+            <xs:enumeration value="RFMREJECT"/>
+            <xs:enumeration value="RFILECOPY"/>
+            <xs:enumeration value="SFILECOPY"/>
+            <xs:enumeration value="SFMACCEPT"/>
+            <xs:enumeration value="RPDELNOT"/>
+            <xs:enumeration value="RFMACCEPT"/>
+        </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CompressionEnum">
+		<!-- Rimappa i valori del CompressionType -->
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE" />
+			<xs:enumeration value="ZIP" />
+			<xs:enumeration value="GZIP" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ISODateTime">
+		<xs:restriction base="xs:dateTime" />
+	</xs:simpleType>
+	<xs:simpleType name="PossibleDuplicateFlagEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="T" />
+			<xs:enumeration value="F" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PriorityType">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:maxInclusive value="99" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TotalType">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:maxInclusive value="9999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

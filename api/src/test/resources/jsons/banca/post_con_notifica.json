@@ -1,0 +1,353 @@
+{
+    "bancaDelBeneficiario": {
+        "bic": "BCITITMMXXX",
+        "intestazione": "INTESA SAN PAOLO",
+        "codiceLEI": "codiceLEI",
+        "codiceSistemaClearing": "codiceSistemaClearing",
+        "identificativoClearing": "identificativoClearing",
+        "rapporto": {
+            "numero": "1234",
+            "identificativo": "12345",
+            "divisa": "EUR",
+            "codiceTipoConto": "codiceTipoConto",
+            "dettaglioTipoConto": "dettaglioTipoConto",
+            "intestazioneConto": "intestazioneConto",
+            "codiceTipoAlias": "codiceTipoAlias",
+            "descrizioneAlias": "descrizioneAlias",
+            "dettaglioIdentificativoAlias": "dettaglioIdentificativoAlias",
+            "codiceIdentificativoConto": "codiceIdentificativoConto",
+            "descrizioneIdentificativoConto": null,
+            "emittente": "emittente",
+            "codiceFiliale": 1,
+            "denominazioneFiliale": "denominazioneFiliale",
+            "tipoRapporto": "RAPPORTO",
+            "ndg": "ndg"
+        }
+    },
+    "dettagliBonifico": {
+        "dettagliImporto": {
+            "importo": "12.345",
+            "divisa": "USD",
+            "cambio": "0.98"
+        },
+        "dettagliDate": {
+            "dataCreazione": "2025-01-01",
+            "dataEsecuzione": "2025-01-01",
+            "dataValutaOrdinante": "2025-01-01",
+            "dataRegolamentoBancaBeneficiario": "2025-01-01"
+        },
+        "contoBancaDiCopertura": {
+            "rapportoBanca": "rapportoBanca",
+            "divisa": "USD",
+            "bic": "BCITITMMXXX",
+            "intestazione": "INTESA SAN PAOLO"
+        },
+        "dettagliCommissioni": { 
+            "tipologiaCommissioni": "SHARED",
+            "regolamentoBanca": "EURO",
+            "commissioniBanca": {
+                "codice": "codice",
+                "descrizione": "Descrizione della commissione",
+                "importo": 2,
+                "divisa": "EUR"
+            }
+        },
+        "dettagliNotifica": {
+            "notifica": "Questa è una notifica"
+        }
+    },
+    "sistemaDiRegolamento": {
+        "sistemaDiRegolamento": "TARGET",
+        "priorita": "URGENTE",
+        "stp": false
+    },
+    "riferimentiAggiuntivi": {
+        "altroIdentificativoPagamento": "<string>",
+        "riferimentiAggiuntivi1": {
+            "modalitaAvvisoPagamento": "<string>",
+            "emailDestinatarioReporting": "<string>",
+            "intestazioneDestinatarioReporting": "<string>",
+            "indirizzoPostale": {
+                "indirizzo": "via delle vie",
+                "citta": "citta",
+                "cap": "000001",
+                "paese": "IT",
+                "divisione": "divisione",
+                "sottoDivisione": "sottoDivisione",
+                "numeroCivico": "civico",
+                "edificio": "edificio",
+                "piano": "piano",
+                "cassettaPostale": "cassettaPostale",
+                "stanza": "stanza",
+                "localita": "localita",
+                "distretto": "distretto",
+                "provincia": "provincia",
+                "lineaIndirizzo": null
+            }
+        },
+        "riferimentiAggiuntivi2": {
+            "modalitaAvvisoPagamento": "<string>",
+            "emailDestinatarioReporting": "<string>",
+            "intestazioneDestinatarioReporting": "<string>",
+            "indirizzoPostale": {
+                "indirizzo": "via delle vie",
+                "citta": "citta",
+                "cap": "000001",
+                "paese": "IT",
+                "divisione": "divisione",
+                "sottoDivisione": "sottoDivisione",
+                "numeroCivico": "civico",
+                "edificio": "edificio",
+                "piano": "piano",
+                "cassettaPostale": "cassettaPostale",
+                "stanza": "stanza",
+                "localita": "localita",
+                "distretto": "distretto",
+                "provincia": "provincia",
+                "lineaIndirizzo": null
+            }
+        },
+        "istruzioniBancaRicevente1": "<string>",
+        "istruzioniBancaRicevente2": "<string>",
+        "istruzioniBancaRicevente3": "<string>",
+        "istruzioniBancaRicevente4": "<string>",
+        "istruzioniBancaRicevente5": "<string>",
+        "istruzioniBancaRicevente6": "<string>",
+        "istruzioneBancaDelBeneficiario1": {
+            "codice": "<string>",
+            "istruzioni": "<string>"
+        },
+        "istruzioneBancaDelBeneficiario2": {
+            "codice": "<string>",
+            "istruzioni": "<string>"
+        },
+        "prioritaTransazione": "NORMALE",
+        "codiceLivelloDiServizio": "<string>",
+        "dettaglioLivelloDiServizio": "<string>",
+        "classificazionePagamento": "<string>",
+        "dettaglioClassificazionePagamento": "<string>",
+        "codiceTransazione": "<string>",
+        "dettaglioIdentificativoTransazione": "<string>",
+        "codiceTipoServizio": "<string>",
+        "dettaglioTipoServizio": "<string>",
+        "valoreCambioIstruito": 1,
+        "regulatoryReporting": [
+            {
+                "tipo": "CREDITORE",
+                "autoritaRichiedente": "<string>",
+                "paeseAutoritaRichiedente": "IT",
+                "dettagliRegulatoryReporting": [
+                    {
+                        "dettaglio": "<string>",
+                        "data": "2025-01-01",
+                        "importo": {
+                            "importo": 1,
+                            "divisa": "EUR"
+                        },
+                        "paese": "IT",
+                        "informazioniAggiuntive": "<string>"
+                    },
+                    {
+                        "dettaglio": "<string>",
+                        "data": "2025-01-01",
+                        "importo": {
+                            "importo": 1.6,
+                            "divisa": "USD"
+                        },
+                        "paese": "IT",
+                        "informazioniAggiuntive": "<string>"
+                    }
+                ]
+            },
+            {
+                "tipo": "DEBITORE",
+                "autoritaRichiedente": "<string>",
+                "paeseAutoritaRichiedente": "IT",
+                "dettagliRegulatoryReporting": [
+                    {
+                        "dettaglio": "<string>",
+                        "data": "2025-01-01",
+                        "importo": {
+                            "importo": 1.6,
+                            "divisa": "EUR"
+                        },
+                        "paese": "IT",
+                        "informazioniAggiuntive": "<string>"
+                    },
+                    {
+                        "dettaglio": "<string>",
+                        "data": "2025-01-01",
+                        "importo": {
+                            "importo": 1.6,
+                            "divisa": "EUR"
+                        },
+                        "paese": "IT",
+                        "informazioniAggiuntive": "<string>"
+                    }
+                ]
+            }
+        ]
+    },
+    "dettagliCausale": {
+        "codiceCausaleTransazione": "codiceCausaleTransazione",
+        "causale": {
+            "causaleDescrittiva": "causela descrittiva 1"
+        }
+    },
+    "ordinante": {
+        "bic": "BCITITMMXXX",
+        "intestazione": "INTESA SAN PAOLO",
+        "codiceLEI": "codiceLEI",
+        "codiceSistemaClearing": "codiceSistemaClearing",
+        "identificativoClearing": "identificativoClearing",
+        "rapporto": {
+            "numero": "1234",
+            "identificativo": "12345",
+            "divisa": "EUR",
+            "codiceTipoConto": "codiceTipoConto",
+            "dettaglioTipoConto": "dettaglioTipoConto",
+            "intestazioneConto": "intestazioneConto",
+            "codiceTipoAlias": "codiceTipoAlias",
+            "descrizioneAlias": "descrizioneAlias",
+            "dettaglioIdentificativoAlias": "dettaglioIdentificativoAlias",
+            "codiceIdentificativoConto": "codiceIdentificativoConto",
+            "descrizioneIdentificativoConto": null,
+            "emittente": "emittente",
+            "codiceFiliale": 1,
+            "denominazioneFiliale": "denominazioneFiliale",
+            "tipoRapporto": "RAPPORTO",
+            "ndg": "ndg"
+        }
+    },
+    "beneficiario": {
+        "bic": "<string>",
+        "intestazione": "<string>",
+        "codiceLEI": "<string>",
+        "codiceSistemaClearing": "<string>",
+        "identificativoClearing": "<string>",
+        "rapporto": {
+            "numero": "1234",
+            "identificativo": "<string>",
+            "divisa": "USD",
+            "codiceTipoConto": "<string>",
+            "dettaglioTipoConto": "<string>",
+            "intestazioneConto": "<string>",
+            "codiceTipoAlias": "<string>",
+            "descrizioneAlias": "<string>",
+            "dettaglioIdentificativoAlias": "<string>",
+            "codiceIdentificativoConto": "<string>",
+            "descrizioneIdentificativoConto": "<string>",
+            "emittente": "<string>",
+            "codiceFiliale": 1,
+            "denominazioneFiliale": "<string>",
+            "tipoRapporto": "SOTTO_CONTO",
+            "ndg": "<string>"
+        },
+        "indirizzo": {
+            "indirizzo": "via delle vie",
+            "citta": "citta",
+            "cap": "000001",
+            "paese": "IT",
+            "divisione": "divisione",
+            "sottoDivisione": "sottoDivisione",
+            "numeroCivico": "civico",
+            "edificio": "edificio",
+            "piano": "piano",
+            "cassettaPostale": "cassettaPostale",
+            "stanza": "stanza",
+            "localita": "localita",
+            "distretto": "distretto",
+            "provincia": "provincia",
+            "lineaIndirizzo": null
+        }
+    },
+    "bancaOrdinante": {
+        "bic": "<string>",
+        "intestazione": "<string>",
+        "codiceLEI": "<string>",
+        "codiceSistemaClearing": "<string>",
+        "identificativoClearing": "<string>",
+        "rapporto": {
+            "numero": "1234",
+            "identificativo": "<string>",
+            "divisa": "USD",
+            "codiceTipoConto": "<string>",
+            "dettaglioTipoConto": "<string>",
+            "intestazioneConto": "<string>",
+            "codiceTipoAlias": "<string>",
+            "descrizioneAlias": "<string>",
+            "dettaglioIdentificativoAlias": "<string>",
+            "codiceIdentificativoConto": "<string>",
+            "descrizioneIdentificativoConto": "<string>",
+            "emittente": "<string>",
+            "codiceFiliale": 1,
+            "denominazioneFiliale": "<string>",
+            "tipoRapporto": "SOTTO_CONTO",
+            "ndg": "<string>"
+        },
+        "indirizzo": {
+            "indirizzo": "via delle vie",
+            "citta": "citta",
+            "cap": "000001",
+            "paese": "IT",
+            "divisione": "divisione",
+            "sottoDivisione": "sottoDivisione",
+            "numeroCivico": "civico",
+            "edificio": "edificio",
+            "piano": "piano",
+            "cassettaPostale": "cassettaPostale",
+            "stanza": "stanza",
+            "localita": "localita",
+            "distretto": "distretto",
+            "provincia": "provincia",
+            "lineaIndirizzo": null
+        }
+    },
+    "bancaDestinataria": {
+        "bic": "<string>",
+        "intestazione": "<string>",
+        "codiceLEI": "<string>",
+        "codiceSistemaClearing": "<string>",
+        "identificativoClearing": "<string>",
+        "rapporto": {
+            "numero": "1234",
+            "identificativo": "<string>",
+            "divisa": "EUR",
+            "codiceTipoConto": "<string>",
+            "dettaglioTipoConto": "<string>",
+            "intestazioneConto": "<string>",
+            "codiceTipoAlias": "<string>",
+            "descrizioneAlias": "<string>",
+            "dettaglioIdentificativoAlias": "<string>",
+            "codiceIdentificativoConto": "<string>",
+            "descrizioneIdentificativoConto": "<string>",
+            "emittente": "<string>",
+            "codiceFiliale": 1,
+            "denominazioneFiliale": "<string>",
+            "tipoRapporto": "SOTTO_CONTO",
+            "ndg": "<string>"
+        },
+        "indirizzo": {
+            "indirizzo": "via delle vie",
+            "citta": "citta",
+            "cap": "000001",
+            "paese": "IT",
+            "divisione": "divisione",
+            "sottoDivisione": "sottoDivisione",
+            "numeroCivico": "civico",
+            "edificio": "edificio",
+            "piano": "piano",
+            "cassettaPostale": "cassettaPostale",
+            "stanza": "stanza",
+            "localita": "localita",
+            "distretto": "distretto",
+            "provincia": "provincia",
+            "lineaIndirizzo": null
+        }
+    },
+    "sottoTipologiaBonifico": {
+        "tipo": "pacs009_camt57"
+    },
+    "altriIntermediari": {},
+    "user": null
+}

@@ -1,0 +1,4 @@
+{
+    "sonarQubeUri": "https://ccp-dev.flowpay.it/sonarqube",
+    "projectKey": "ccp-cross-border-credit-transfer-microservice"
+}

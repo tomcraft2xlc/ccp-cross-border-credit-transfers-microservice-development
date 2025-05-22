@@ -1,0 +1,112 @@
+plugins {
+    id 'java'
+    id 'org.sonarqube' version '6.0.1.5171'
+    id 'jacoco'
+}
+
+group = 'com.flowpay.ccp'
+version = '1.0-SNAPSHOT'
+
+sonar {
+    properties {
+        property "sonar.token", "${SONAR_TOKEN}"
+        property "sonar.projectKey", "ccp-cross-border-credit-transfer-microservice"
+        property "sonar.projectName", "ccp-cross-border-credit-transfer-microservice"
+
+        property "sonar.java.source", "17"
+
+        property 'sonar.coverage.jacoco.xmlReportPaths', "$rootDir/build/jacoco-report/jacoco.xml,$rootDir/worker/build/jacoco-report/jacoco.xml,$rootDir/api/build/jacoco-report/jacoco.xml"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+
+subprojects {
+
+    test {
+        systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+        testLogging {
+            events "PASSED", "FAILED", "SKIPPED" // Show results for these events
+            showStandardStreams = true           // Show standard output and error streams
+        }
+        finalizedBy jacocoTestReport
+        jacoco {
+            excludeClassLoaders = ["*QuarkusClassLoader"]
+            destinationFile = layout.buildDirectory.file("jacoco-quarkus.exec").get().asFile
+        }
+        jacocoTestReport.enabled = false
+
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/FlowPay/ccp-job")
+            credentials {
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_MAVEN_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/FlowPay/ccp-persistence")
+            credentials {
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_MAVEN_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/FlowPay/ccp-log-handler")
+            credentials {
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_MAVEN_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/FlowPay/ccp-poll-client")
+            credentials {
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_MAVEN_TOKEN")
+            }
+        }
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+//    sonar {
+//        properties {
+//            property "sonar.sources", "src/main"
+//            property "sonar.tests", "src/test"
+//
+//            property "sonar.java.source", "17"
+//
+//            property 'sonar.coverage.jacoco.xmlReportPaths', layout.buildDirectory.file('jacoco-report/jacoco.xml').get().asFile
+//        }
+//    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+        }
+    }
+
+}
+
+

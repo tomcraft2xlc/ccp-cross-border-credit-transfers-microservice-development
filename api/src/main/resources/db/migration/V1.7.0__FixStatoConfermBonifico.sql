@@ -1,0 +1,2 @@
+ALTER TYPE stato_conferma_bonifico RENAME VALUE 'ERRORENON_INVIATA' TO 'ERRORE';
+ALTER TYPE stato_conferma_bonifico ADD VALUE 'NON_INVIATA';

@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+
+dependencies {
+
+    implementation project(":common")
+
+    implementation 'io.quarkus:quarkus-container-image-docker'
+
+    implementation platform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation platform("com.flowpay.ccp:ccp-library-bom:${ccpPlatformVersion}")
+
+    implementation 'io.quarkus:quarkus-smallrye-reactive-messaging'
+    implementation 'io.smallrye.reactive:smallrye-reactive-messaging-jms'
+
+    implementation 'org.apache.activemq:artemis-jakarta-client:2.37.0'
+    implementation 'jakarta.jms:jakarta.jms-api:3.1.0'
+
+    implementation 'io.quarkus:quarkus-smallrye-context-propagation'
+
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation 'io.quarkus:quarkus-rest-client-jackson'
+
+    implementation 'com.google.guava:guava:33.3.1-jre'
+
+    implementation 'io.smallrye.reactive:mutiny-reactor:1.6.0'
+
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-reactive-pg-client'
+    implementation 'io.quarkus:quarkus-redis-client'
+
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+
+    implementation 'com.flowpay.ccp:ccp-job'
+    implementation 'com.flowpay.ccp:ccp-persistence'
+    implementation 'com.flowpay.ccp:ccp-log-handler'
+    implementation 'com.flowpay.ccp:ccp-poll-client'
+    implementation 'com.flowpay.ccp:ccp-auth-client'
+    implementation 'com.flowpay.ccp:ccp-cip-client'
+    implementation 'com.flowpay.ccp:ccp-pagination'
+
+    implementation "org.javatuples:javatuples:1.2"
+
+    implementation 'com.prowidesoftware:pw-iso20022:SRU2024-10.2.3'
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.quarkus:quarkus-junit5-mockito'
+    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'org.wiremock:wiremock:3.9.1'
+    testImplementation 'io.quarkus:quarkus-test-security'
+    testImplementation platform('io.quarkiverse.artemis:quarkus-artemis-bom:3.0.7')
+    testImplementation 'io.quarkiverse.artemis:quarkus-artemis-jms'
+    testImplementation 'io.quarkiverse.artemis:quarkus-test-artemis'
+    testImplementation 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
+    testImplementation("io.quarkus:quarkus-flyway")
+    testImplementation("io.quarkus:quarkus-jdbc-postgresql")
+    testImplementation("org.flywaydb:flyway-database-postgresql")
+    testImplementation 'io.quarkus:quarkus-redis-client'
+
+    testImplementation("io.quarkus:quarkus-jacoco")
+}

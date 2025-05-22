@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    plugins {
+        id "${quarkusPluginId}" version "${quarkusPluginVersion}"
+    }
+}
+rootProject.name = 'ccp-cross-border-credit-transfers-microservice'
+include 'api'
+include 'worker'
+include 'common'
